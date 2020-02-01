@@ -11,3 +11,25 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+button {
+  padding: 8px 15px;
+  border-radius: 5px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+button:hover {
+  transform: translateY(-3px);
+}
+button:active {
+  transform: scale(0.99);
+}
+
+button.flat {
+  background: black;
+  color: white;
+  font-weight: 600;
+}
+
+@import "./reset.css";
+
