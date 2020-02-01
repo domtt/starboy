@@ -21,15 +21,17 @@ interface StarHistoryEntry {
 const App = () => {
   const token = useToken();
 
-  const [repos] = useState<string[]>(["angular/angular", "facebook/react"]);
+  const [newRepo, setNewRepo] = useState("");
   const [data, setData] = useState<{ [k: string]: StarHistoryEntry[] }>({});
+  const mergeData = (o: any) => setData({...data, ...o});
   const fetchStars = () => {
     if (token === null) {
       return;
     }
-    getStars(repos, token)
+    getStars([newRepo], token)
       .then(r => r.json())
-      .then(setData);
+      .then(mergeData);
+    setNewRepo("");
   };
 
   useEffect(() => console.log(data), [data]);
@@ -48,9 +50,12 @@ const App = () => {
 
   return (
     <Layout>
-      <button disabled={!token} onClick={fetchStars}>
+      <form onSubmit={e => {e.preventDefault();fetchStars()}}>
+      <input type="text" value={newRepo} onChange={e => setNewRepo(e.target.value)} placeholder="repository" />
+      <button disabled={!token}>
         Fetch stars
       </button>
+      </form>
       {Object.keys(data).length > 0 && (
         <LineChart width={800} height={400} data={all}>
           <XAxis
