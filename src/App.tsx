@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import "./App.css";
 
 import { LineChart, XAxis, YAxis, Line, Legend } from "recharts";
-import {useLocation} from "react-router-dom";
 
-import Layout from './components/Layout'
+import Layout from "./components/Layout";
+import { useToken } from "./state/token";
 
 const getStars = (repos: string[], token: string) =>
   fetch(`http://localhost:3000/api/data?repos=${repos.join(",")}`, {
@@ -18,15 +18,8 @@ interface StarHistoryEntry {
   v: number;
 }
 
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
-
 const App = () => {
-  const query = useQuery();
-  // TODO: hide token from url and store it in localstorage
-  // then search for it in localstorage as well
-  const token = query.get("token")
+  const token = useToken();
 
   const [repos] = useState<string[]>(["angular/angular", "facebook/react"]);
   const [data, setData] = useState<{ [k: string]: StarHistoryEntry[] }>({});
@@ -54,8 +47,10 @@ const App = () => {
   );
 
   return (
-  <Layout>
-      <button disabled={!token || token.length === 0} onClick={fetchStars}>Fetch stars</button>
+    <Layout>
+      <button disabled={!token} onClick={fetchStars}>
+        Fetch stars
+      </button>
       {Object.keys(data).length > 0 && (
         <LineChart width={800} height={400} data={all}>
           <XAxis
