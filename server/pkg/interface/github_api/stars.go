@@ -24,7 +24,7 @@ func get(path string, token string) *http.Response {
 	return res
 }
 
-type Stargazer struct {
+type stargazer struct {
 	StarredAt string `json:"starred_at"`
 }
 
@@ -48,7 +48,7 @@ func getCurrentStars(repo string, token string) int {
 func getPage(repo string, token string, page int) (time.Time, int) {
 	res := get(fmt.Sprintf("https://api.github.com/repos/%s/stargazers?page=%d", repo, page), token)
 	bodyBytes, _ := ioutil.ReadAll(res.Body)
-	stargazers := []Stargazer{}
+	stargazers := []stargazer{}
 	json.Unmarshal(bodyBytes, &stargazers)
 	if len(stargazers) == 0 {
 		return time.Now(), 0

@@ -1,7 +1,6 @@
 package env
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -13,9 +12,9 @@ type DBConfig struct {
 }
 
 type EnvConfig struct {
-	Port, GithubClientID, GithubClientSecret string
-	Production                               bool
-	DB                                       DBConfig
+	Port, GithubClientID, GithubClientSecret, WebAppURL, ServerURL string
+	Production                                                     bool
+	DB                                                             DBConfig
 }
 
 var config EnvConfig
@@ -44,13 +43,20 @@ func hasEnv(key string) bool {
 func Load() *EnvConfig {
 	godotenv.Load()
 	prod := hasEnv("PRODUCTION")
-	fmt.Println(os.Getenv("PRODUCTION"))
+	port := getEnv("PORT", "8080")
 	dbHost := "localhost"
+	webApp := "http://localhost:3000"
+	serverURL := "http://localhost:" + port
+
 	if prod {
 		dbHost = "db"
+		webApp = "" // same as server
+		serverURL = "http://starboy.dev"
 	}
+
 	config = EnvConfig{
-		Port:               getEnv("PORT", "8080"),
+		Production:         prod,
+		Port:               port,
 		GithubClientID:     mustGet("GITHUB_CLIENT_ID"),
 		GithubClientSecret: mustGet("GITHUB_CLIENT_SECRET"),
 		DB: DBConfig{
@@ -59,7 +65,8 @@ func Load() *EnvConfig {
 			User: mustGet("POSTGRES_USER"),
 			Host: dbHost,
 		},
-		Production: prod,
+		WebAppURL: webApp,
+		ServerURL: serverURL,
 	}
 	return &config
 }

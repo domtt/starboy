@@ -42,6 +42,14 @@ func codeToAccessToken(code string) (string, error) {
 }
 
 func GithubAuthHandler(c echo.Context) error {
+	c.Redirect(http.StatusFound, fmt.Sprintf(
+		"https://github.com/login/oauth/authorize?client_id=%s&redirect_uri=%s",
+		env.Config().GithubClientID,
+		env.Config().ServerURL+"/auth/github/callback",
+	))
+	return nil
+}
+func GithubAuthCallback(c echo.Context) error {
 	// 1. Get the query code
 	code := c.QueryParam("code")
 
@@ -50,5 +58,6 @@ func GithubAuthHandler(c echo.Context) error {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return c.Redirect(http.StatusFound, "http://localhost:3001?token="+accessToken)
+	c.Redirect(http.StatusFound, env.Config().WebAppURL+"?token="+accessToken)
+	return nil
 }

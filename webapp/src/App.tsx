@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 import { LineChart, XAxis, YAxis, Line, Legend } from "recharts";
+import { useToken } from './state/token';
 
 const getStars = (repo: string, token: string) =>
-  fetch(`http://localhost:8080/api/repo/${repo}`, {
+  fetch(`http://localhost:8080/api/repo/${repo}?token=${token}`, {
     headers: {
       Authorization: token
     }
@@ -17,7 +17,7 @@ interface StarHistoryEntry {
 }
 
 const App = () => {
-  const token = "";
+  const token = useToken();
 
   const [newRepo, setNewRepo] = useState("");
   const [data, setData] = useState<{ [k: string]: StarHistoryEntry[] }>({});
