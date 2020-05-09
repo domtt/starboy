@@ -45,7 +45,7 @@ func Load() *EnvConfig {
 	godotenv.Load()
 	prod := hasEnv("PRODUCTION")
 	fmt.Println(os.Getenv("PRODUCTION"))
-	dbHost := "locahost"
+	dbHost := "localhost"
 	if prod {
 		dbHost = "db"
 	}

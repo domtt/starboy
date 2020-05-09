@@ -12,7 +12,7 @@ func main() {
 	cfg := env.Load()
 	db, err := database.Connect()
 	if err != nil {
-		log.Fatal("Failed to load the database")
+		log.Fatal("Failed to load the database: ", err)
 	}
 	defer db.Close()
 
