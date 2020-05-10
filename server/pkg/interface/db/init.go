@@ -3,16 +3,11 @@ package db
 import (
 	"fmt"
 
+	"github.com/d0minikt/starboy/server/pkg/domain/model"
 	"github.com/d0minikt/starboy/server/pkg/interface/env"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
-
-type Repo struct {
-	gorm.Model
-	DisplayName string
-	GithubPath  string
-}
 
 func Connect() (*gorm.DB, error) {
 	cfg := env.Config().DB
@@ -21,6 +16,23 @@ func Connect() (*gorm.DB, error) {
 		return nil, err
 	}
 
-	db.AutoMigrate(&Repo{})
+	db.AutoMigrate(&model.Repo{})
+	db.AutoMigrate(&model.StargazerPage{})
 	return db, nil
+}
+
+type DB interface {
+	CreateRepo(r *model.Repo)
+}
+
+type database struct {
+	db *gorm.DB
+}
+
+func New(db *gorm.DB) DB {
+	return &database{db: db}
+}
+
+func (db *database) CreateRepo(r *model.Repo) {
+	db.db.Create(r)
 }

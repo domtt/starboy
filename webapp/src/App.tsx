@@ -5,15 +5,15 @@ import { LineChart, XAxis, YAxis, Line, Legend } from "recharts";
 import { useToken } from './state/token';
 
 const getStars = (repo: string, token: string) =>
-  fetch(`http://localhost:8080/api/repo/${repo}?token=${token}`, {
+  fetch(`http://localhost:8080/api/repos/${repo}/stars?token=${token}`, {
     headers: {
       Authorization: token
     }
   });
 
 interface StarHistoryEntry {
-  t: number;
-  v: number;
+  unixTime: number;
+  stars: number;
 }
 
 const App = () => {
@@ -37,7 +37,7 @@ const App = () => {
   const all = Object.keys(data)
     .map(k => data[k])
     .reduce((a, b) => [...a, ...b], []);
-  const times: number[] = all.map(d => d.t);
+  const times: number[] = all.map(d => d.unixTime);
   let [min, max] = [Math.min(...times), Math.max(...times)];
   let startYear = new Date(1000 * min).getFullYear();
   let endYear = new Date(1000 * max).getFullYear();
@@ -57,7 +57,7 @@ const App = () => {
       {Object.keys(data).length > 0 && (
         <LineChart width={800} height={400} data={all}>
           <XAxis
-            dataKey="t"
+            dataKey="unixTime"
             domain={["dataMin", "dataMax"]}
             name="Time"
             scale="time"
@@ -73,9 +73,9 @@ const App = () => {
           {Object.keys(data).map(k => (
             <Line
               key={k}
-              dataKey={"v"}
+              dataKey={"stars"}
               name={k}
-              data={data[k].sort((a, b) => a.t - b.t)}
+              data={data[k].sort((a, b) => a.unixTime - b.unixTime)}
             />
           ))}
         </LineChart>

@@ -10,10 +10,9 @@ import (
 	"net/url"
 
 	"github.com/d0minikt/starboy/server/pkg/interface/env"
-	"github.com/labstack/echo/v4"
 )
 
-func codeToAccessToken(code string) (string, error) {
+func CodeToAccessToken(code string) (string, error) {
 	config := env.Config()
 	resp, err := http.Post(
 		fmt.Sprintf(
@@ -39,25 +38,4 @@ func codeToAccessToken(code string) (string, error) {
 	token := values["access_token"][0]
 
 	return token, nil
-}
-
-func GithubAuthHandler(c echo.Context) error {
-	c.Redirect(http.StatusFound, fmt.Sprintf(
-		"https://github.com/login/oauth/authorize?client_id=%s&redirect_uri=%s",
-		env.Config().GithubClientID,
-		env.Config().ServerURL+"/auth/github/callback",
-	))
-	return nil
-}
-func GithubAuthCallback(c echo.Context) error {
-	// 1. Get the query code
-	code := c.QueryParam("code")
-
-	// 2. get the access token that works for longer
-	accessToken, err := codeToAccessToken(code)
-	if err != nil {
-		log.Fatal(err)
-	}
-	c.Redirect(http.StatusFound, env.Config().WebAppURL+"?token="+accessToken)
-	return nil
 }
